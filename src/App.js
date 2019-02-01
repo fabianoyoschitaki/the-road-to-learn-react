@@ -63,34 +63,64 @@ class App extends Component {
     const { list, searchTerm}  = this.state;
     return (
         <div className="App">
-          <form>
-            <input 
-              type="text" 
-              onChange={this.onSearchChange}
-              //uncontrolled components should be controlled input, textArea, select
-              value={searchTerm}
-              />
-          </form>
-          {
-            //ES6 destructuring 
-            //this.state.list.filter(isSearched(this.state.searchTerm)).map(item => 
-            list.filter(isSearched(searchTerm)).map(item => 
-              <div key={item.objectID}>
-                <span>
-                  <a href={item.url}>{item.title}</a>
-                </span>
-                <span>{item.author}</span>
-                <span>{item.num_comments}</span>
-                <span>{item.points}</span>
-                <span>
-                  <button type="button" onClick={() =>  this.onDismiss(item.objectID)}>
-                    Dismiss
-                  </button>
-                </span>
-              </div>
-            )
-          }
+          <Search
+            onChange={this.onSearchChange}
+            //uncontrolled components should be controlled input, textArea, select
+            value={searchTerm}
+          />
+          <Table
+            list={list}
+            pattern={searchTerm}
+            onDismiss={this.onDismiss}
+          />
         </div>
+    );
+  }
+}
+
+class Search extends Component {
+  render(){
+    /** Notice the this.props object. The props - short form for properties - have all the values you 
+    have passed to the components when you used them in your App component. You could reuse these 
+    components somewhere else but pass them different values. They are reusable. **/
+    const { value, onChange } = this.props;
+    return (
+      <form>
+        <input 
+          type="text" 
+          onChange={onChange}
+          //uncontrolled components should be controlled input, textArea, select
+          value={value}
+          />
+      </form>
+    );
+  }
+}
+
+class Table extends Component {
+  render(){
+    //ES6 destructuring
+    const {list, pattern, onDismiss } = this.props;
+    return (
+      <div>
+        { list.filter(isSearched(pattern)).map(item => 
+            <div key={item.objectID}>
+              <span>
+                <a href={item.url}>{item.title}</a>
+              </span>
+              <span>{item.author}</span>
+              <span>{item.num_comments}</span>
+              <span>{item.points}</span>
+              <span>
+                <button 
+                  type="button" 
+                  onClick={() => onDismiss(item.objectID)}>
+                  Dismiss
+                </button>
+              </span>
+            </div>
+          )}
+      </div>
     );
   }
 }
