@@ -22,6 +22,16 @@ const list = [
 ];
 
 class App extends Component {
+
+  constructor(props){
+    super(props);
+    
+    this.state = {
+      //list: list, because the list variable name is called list, we can declare only list,
+      list,
+    };
+  }
+
   render() {
     const helloWorld = {
       text: 'Welcome to React!'
@@ -44,6 +54,11 @@ class App extends Component {
                   <span>{item.author}</span>
                   <span>{item.num_comments}</span>
                   <span>{item.points}</span>
+                  <span>
+                    <button type="button" onClick={() =>  this.onDismiss(item.objectID)}>
+                      Dismiss
+                    </button>
+                  </span>
                 </div>
             )
           }
