@@ -21,6 +21,13 @@ const list = [
   }
 ];
 
+/** function isSearched(searchTerm){
+  return function(item){
+    return !searchTerm || item.title.toLowerCase().includes(searchTerm.toLowerCase());
+  }
+} or the arrow function below with high order functions **/
+const isSearched = (searchTerm) => (item) => !searchTerm || item.title.toLowerCase().includes(searchTerm.toLowerCase());
+
 class App extends Component {
 
   constructor(props){
@@ -29,10 +36,12 @@ class App extends Component {
     this.state = {
       //list: list, because the list variable name is called list, we can declare only list,
       list,
+      searchTerm: '',
     };
 
     //The function is bound to the class and thus becomes a class method. You have to bind class methods in the constructor.
     this.onDismiss = this.onDismiss.bind(this);
+    this.onSearchChange = this.onSearchChange.bind(this);
   }
 
   onDismiss(id){
@@ -42,23 +51,21 @@ class App extends Component {
     const updatedList = this.state.list.filter(isNotId);
     **/
     const updatedList = this.state.list.filter(item => item.objectID !== id);
-    this.setState({list: updatedList});
-    console.log(this.state.list);
+    this.setState({ list: updatedList });
+  }
+
+  onSearchChange(event){
+    this.setState({ searchTerm: event.target.value });
   }
 
   render() {
-    const helloWorld = {
-      text: 'Welcome to React!'
-    };
-  
-    helloWorld.text = 'Hot Reloading Module';
     return (
         <div className="App">
           <form>
-            <input type="text" />
+            <input type="text" onChange={this.onSearchChange}/>
           </form>
           {
-            this.state.list.map(item => 
+            this.state.list.filter(isSearched(this.state.searchTerm)).map(item => 
               <div key={item.objectID}>
                 <span>
                   <a href={item.url}>{item.title}</a>
