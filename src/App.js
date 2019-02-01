@@ -64,7 +64,12 @@ class App extends Component {
     return (
         <div className="App">
           <form>
-            <input type="text" onChange={this.onSearchChange}/>
+            <input 
+              type="text" 
+              onChange={this.onSearchChange}
+              //uncontrolled components should be controlled input, textArea, select
+              value={searchTerm}
+              />
           </form>
           {
             //ES6 destructuring 
