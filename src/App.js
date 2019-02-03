@@ -64,10 +64,11 @@ class App extends Component {
     return (
         <div className="App">
           <Search
-            onChange={this.onSearchChange}
             //uncontrolled components should be controlled input, textArea, select
             value={searchTerm}
-          />
+            onChange={this.onSearchChange}>
+            Search
+          </Search>
           <Table
             list={list}
             pattern={searchTerm}
@@ -83,10 +84,10 @@ class Search extends Component {
     /** Notice the this.props object. The props - short form for properties - have all the values you 
     have passed to the components when you used them in your App component. You could reuse these 
     components somewhere else but pass them different values. They are reusable. **/
-    const { value, onChange } = this.props;
+    const { value, onChange, children } = this.props;
     return (
       <form>
-        <input 
+        { children } <input 
           type="text" 
           onChange={onChange}
           //uncontrolled components should be controlled input, textArea, select
