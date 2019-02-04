@@ -51,8 +51,9 @@ class App extends Component {
       //list: list, because the mocked list variable name is called list, we can declare only list,
       //list, commented because we're fetching real API
       //searchTerm: '', commented because we're fetching real API
+      results: null,
+      searchKey: '',
       searchTerm: DEFAULT_QUERY,
-      result: null,
     };
 
     //The function is bound to the class and thus becomes a class method. You have to bind class methods in the constructor.
@@ -65,68 +66,31 @@ class App extends Component {
 
     //When submitting, call API again
     this.onSearchSubmit = this.onSearchSubmit.bind(this);
-  }
 
-  onSearchSubmit(event){
-    const { searchTerm } = this.state;
-    this.fetchSearchTopstories(searchTerm);
-    event.preventDefault();
-  }
-
-  setSearchTopstories(result){
-    console.log("setSearchTopstories:", result);
-    const { hits, page } = result;
-
-    const oldHits = page !== 0 ? 
-      this.state.result.hits 
-      : [];
-      
-    const updatedHits = [ 
-      ...oldHits, 
-      ...hits
-    ];
-    this.setState({
-      //result : { hits: updatedHits, page: page } because the variable name page is the same, don't need to use :
-      result : { hits: updatedHits, page}
-    });
-  }
-
-  fetchSearchTopstories(searchTerm, page){
-    const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`;
-    console.log(url);
-    fetch(url)
-      .then(response => response.json())
-      .then(result => this.setSearchTopstories(result));
-    //console.log(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`);
-  }
-
-  componentDidMount(){
-    const { searchTerm } = this.state;
-    this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
-  }
-
-  onDismiss(id){
-    /** function isNotId(item){
-      return item.objectID !== id;
-    }
-    const updatedList = this.state.list.filter(isNotId);
-    **/
-    const isNotId = item => item.objectID !== id;
-    const updatedHits = this.state.result.hits.filter(isNotId);
-    this.setState({ 
-      //ES5 result: Object.assign({}, this.state.result, { hits: updatedHits })
-      result: { ...this.state.result, hits: updatedHits }
-    });    
-  }
-
-  onSearchChange(event){
-    this.setState({ searchTerm: event.target.value });
+    //To prevent request in case it's already in the client cache
+    this.needsToSearchTopstories = this.needsToSearchTopstories.bind(this);
   }
 
   render() {
     //ES6 destructuring to shorten filter and map methods
-    const { result, searchTerm }  = this.state;
-    const page = (result && result.page) || 0;
+    const { 
+      searchTerm,
+      results, 
+      searchKey
+    }  = this.state;
+    
+    const page = (
+      results && 
+      results[searchKey] &&
+      results[searchKey].page
+    ) || 0;
+    
+    const list = (
+      results && 
+      results[searchKey] &&
+      results[searchKey].hits
+    ) || [];
+
     return (
       <div className="page">
         <div className="interactions">
@@ -139,21 +103,89 @@ class App extends Component {
             Search
           </Search>
         </div>
-        { result && 
-            <Table
-              list={result.hits}
-              onDismiss={this.onDismiss}
-            />
-        }
+        <Table
+          list={list}
+          onDismiss={this.onDismiss}
+        />        
         <div className="interactions">
           <Button
-              onClick={() => this.fetchSearchTopstories(searchTerm, page + 1)}
+              onClick={() => this.fetchSearchTopstories(searchKey, page + 1)}
               className="button-inline">
               More
             </Button>
         </div>   
       </div>
     );
+  }
+
+  needsToSearchTopstories(searchTerm){
+    return !this.state.results[searchTerm];
+  }
+
+  onSearchSubmit(event){
+    const { searchTerm } = this.state;
+    this.setState({ searchKey: searchTerm });
+    
+    if (this.needsToSearchTopstories(searchTerm)){
+      this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
+    }
+    
+    event.preventDefault();
+  }
+
+  setSearchTopstories(result){
+    const { hits, page } = result;
+    const { searchKey, results } = this.state;
+
+    const oldHits = results && results[searchKey] 
+      ? results[searchKey].hits 
+      : [];
+      
+    const updatedHits = [ 
+      ...oldHits, 
+      ...hits
+    ];
+    this.setState({
+      //result : { hits: updatedHits, page: page } because the variable name page is the same, don't need to use :
+      results : { 
+        ...results,
+        [searchKey]: {hits: updatedHits, page }
+      }
+    });
+  }
+
+  fetchSearchTopstories(searchTerm, page){
+    const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`;
+    console.log("url:", url);
+    fetch(url)
+      .then(response => response.json())
+      .then(result => this.setSearchTopstories(result));    
+  }
+
+  componentDidMount(){
+    const { searchTerm } = this.state;
+    this.setState({ searchKey: searchTerm });
+    this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
+  }
+
+  onDismiss(id){
+    const { searchKey, results } = this.state;    
+    const { hits, page } = results[searchKey];
+
+    const isNotId = item => item.objectID !== id;
+    const updatedHits = hits.filter(isNotId);
+    
+    this.setState({ 
+      //ES5 result: Object.assign({}, this.state.result, { hits: updatedHits })
+      results: { 
+        ...results, 
+        [searchKey]: {hits: updatedHits, page }
+      }
+    });    
+  }
+
+  onSearchChange(event){
+    this.setState({ searchTerm: event.target.value });
   }
 }
 
