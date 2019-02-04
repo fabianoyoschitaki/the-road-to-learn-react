@@ -66,7 +66,7 @@ class App extends Component {
     fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`)
       .then(response => response.json())
       .then(result => this.setSearchTopstories(result));
-    console.log(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`);
+    //console.log(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`);
   }
 
   componentDidMount(){
@@ -82,10 +82,12 @@ class App extends Component {
     **/
     const isNotId = item => item.objectID !== id;
     const updatedHits = this.state.result.hits.filter(isNotId);
+    console.log(updatedHits);
     this.setState({ 
       //ES5 result: Object.assign({}, this.state.result, { hits: updatedHits })
       result: { ...this.state.result, hits: updatedHits }
     });
+    console.log(this.state);
   }
 
   onSearchChange(event){
@@ -94,10 +96,8 @@ class App extends Component {
 
   render() {
     //ES6 destructuring to shorten filter and map methods
-    console.log(this.state);
     const { result, searchTerm }  = this.state;
     if (!result) {
-      console.log("result is null");
       return null;
     }
 
