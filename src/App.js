@@ -113,11 +113,10 @@ class Table extends Component {
               <span>{item.num_comments}</span>
               <span>{item.points}</span>
               <span>
-                <button 
-                  type="button" 
+                <Button
                   onClick={() => onDismiss(item.objectID)}>
                   Dismiss
-                </button>
+                </Button>
               </span>
             </div>
           )}
@@ -126,4 +125,23 @@ class Table extends Component {
   }
 }
 
+class Button extends Component {
+  render(){
+    const {
+      onClick, 
+      className = '', ////You can use a JavaScript ES6 feature: the default parameter because className is optional
+      children
+    } = this.props;
+    
+    return (
+      <button
+        onClick={onClick}
+        className={className}
+        type="button"
+      >
+        {children}
+      </button>
+    );
+  }
+}
 export default App;
