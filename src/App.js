@@ -79,12 +79,26 @@ class App extends Component {
   }
 }
 
-class Search extends Component {
-  render(){
-    /** Notice the this.props object. The props - short form for properties - have all the values you 
+const Search = ({value, onChange, children}) => 
+  <form>
+    { children } <input 
+      type="text" 
+      onChange={onChange}
+      //uncontrolled components should be controlled input, textArea, select
+      value={value}
+      />
+  </form>
+
+/** Replaced by const Search 
+  // for functional stateless components we can destructure
+  //function Search(props) {
+  function Search({value, onChange, children}){
+    
+    Notice the this.props object. The props - short form for properties - have all the values you 
     have passed to the components when you used them in your App component. You could reuse these 
-    components somewhere else but pass them different values. They are reusable. **/
-    const { value, onChange, children } = this.props;
+    components somewhere else but pass them different values. They are reusable.
+    //const { value, onChange, children } = this.props;
+    
     return (
       <form>
         { children } <input 
@@ -94,54 +108,45 @@ class Search extends Component {
           value={value}
           />
       </form>
-    );
+    );  
   }
-}
+**/
 
-class Table extends Component {
-  render(){
-    //ES6 destructuring
-    const {list, pattern, onDismiss } = this.props;
-    return (
-      <div>
-        { list.filter(isSearched(pattern)).map(item => 
-            <div key={item.objectID}>
-              <span>
-                <a href={item.url}>{item.title}</a>
-              </span>
-              <span>{item.author}</span>
-              <span>{item.num_comments}</span>
-              <span>{item.points}</span>
-              <span>
-                <Button
-                  onClick={() => onDismiss(item.objectID)}>
-                  Dismiss
-                </Button>
-              </span>
-            </div>
-          )}
-      </div>
-    );
-  }
-}
+const Table = ({list, pattern, onDismiss}) =>
+  //ES6 destructuring
+  //const {list, pattern, onDismiss } = this.props;
+  <div>
+    { list.filter(isSearched(pattern)).map(item => 
+        <div key={item.objectID}>
+          <span>
+            <a href={item.url}>{item.title}</a>
+          </span>
+          <span>{item.author}</span>
+          <span>{item.num_comments}</span>
+          <span>{item.points}</span>
+          <span>
+            <Button
+              onClick={() => onDismiss(item.objectID)}>
+              Dismiss
+            </Button>
+          </span>
+        </div>
+      )}
+  </div>
 
-class Button extends Component {
-  render(){
+const Button = ({onClick, className = '', children}) =>
+    /**
     const {
       onClick, 
       className = '', ////You can use a JavaScript ES6 feature: the default parameter because className is optional
       children
-    } = this.props;
-    
-    return (
-      <button
-        onClick={onClick}
-        className={className}
-        type="button"
-      >
-        {children}
-      </button>
-    );
-  }
-}
+    } = this.props;**/
+    <button
+      onClick={onClick}
+      className={className}
+      type="button"
+    >
+      {children}
+    </button>
+
 export default App;
