@@ -53,3 +53,15 @@ perform further asynchronous requests.
 
 • componentWillUnmount() - It is called before you destroy your component. You can use the
 lifecycle method to perform any clean up tasks.
+
+-------------
+PropTypes:
+* PropTypes.array
+* PropTypes.bool
+* PropTypes.func
+* PropTypes.number
+* PropTypes.object
+* PropTypes.string
+
+* PropTypes.node
+* PropTypes.element

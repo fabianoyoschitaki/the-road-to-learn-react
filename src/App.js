@@ -1,6 +1,8 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
+
 
 /** MOCK DATA
 const list = [
@@ -263,19 +265,48 @@ const Table = ({list, onDismiss}) =>
       )}
   </div>
 
-const Button = ({onClick, className = '', children}) =>
-    /**
-    const {
-      onClick, 
-      className = '', ////You can use a JavaScript ES6 feature: the default parameter because className is optional
-      children
-    } = this.props;**/
-    <button
-      onClick={onClick}
-      className={className}
-      type="button"
-    >
-      {children}
-    </button>
+const Button = ({ onClick, className = '', children }) =>
+  /**
+  const {
+    onClick, 
+    className = '', ////You can use a JavaScript ES6 feature: the default parameter because className is optional
+    children
+  } = this.props;**/
+  <button
+    onClick={onClick}
+    className={className}
+    type="button"
+  >
+    {children}
+  </button>
+
+//PropTypes
+Button.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  className: PropTypes.string,
+  children: PropTypes.node.isRequired,
+};
+
+Table.propTypes = {
+  list: PropTypes.arrayOf(
+    PropTypes.shape(
+      {
+        objectID: PropTypes.string.isRequired,
+        author: PropTypes.string,
+        url: PropTypes.string,
+        num_comments: PropTypes.number,
+        points: PropTypes.number,
+      }
+    )
+  ).isRequired,
+  onDismiss: PropTypes.func.isRequired,
+};
+
+Search.propTypes = {
+  value: PropTypes.string, 
+  onChange: PropTypes.func, 
+  onSubmit: PropTypes.func, 
+  children: PropTypes.node,
+}
 
 export default App;
