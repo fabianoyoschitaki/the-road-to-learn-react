@@ -97,25 +97,24 @@ class App extends Component {
   render() {
     //ES6 destructuring to shorten filter and map methods
     const { result, searchTerm }  = this.state;
-    if (!result) {
-      return null;
-    }
-
     return (
       <div className="page">
         <div className="interactions">
           <Search
             //uncontrolled components should be controlled input, textArea, select
             value={searchTerm}
-            onChange={this.onSearchChange}>
+            onChange={this.onSearchChange}
+          >
             Search
           </Search>
         </div>
-        <Table
-          list={result.hits}
-          pattern={searchTerm}
-          onDismiss={this.onDismiss}
-        />
+        { result && 
+            <Table
+              list={result.hits}
+              pattern={searchTerm}
+              onDismiss={this.onDismiss}
+            />
+        }       
       </div>
     );
   }
