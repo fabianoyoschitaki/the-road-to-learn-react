@@ -60,21 +60,23 @@ class App extends Component {
 
   render() {
     //ES6 destructuring to shorten filter and map methods
-    const { list, searchTerm}  = this.state;
+    const { list, searchTerm }  = this.state;
     return (
-        <div className="App">
+      <div className="page">
+        <div className="interactions">
           <Search
             //uncontrolled components should be controlled input, textArea, select
             value={searchTerm}
             onChange={this.onSearchChange}>
             Search
           </Search>
-          <Table
-            list={list}
-            pattern={searchTerm}
-            onDismiss={this.onDismiss}
-          />
         </div>
+        <Table
+          list={list}
+          pattern={searchTerm}
+          onDismiss={this.onDismiss}
+        />
+      </div>
     );
   }
 }
@@ -115,18 +117,25 @@ const Search = ({value, onChange, children}) =>
 const Table = ({list, pattern, onDismiss}) =>
   //ES6 destructuring
   //const {list, pattern, onDismiss } = this.props;
-  <div>
-    { list.filter(isSearched(pattern)).map(item => 
-        <div key={item.objectID}>
-          <span>
+  <div className="table">{ 
+    list.filter(isSearched(pattern)).map(item => 
+        <div key={item.objectID} className="table-row">
+          <span style={{ width: '40%'}}>
             <a href={item.url}>{item.title}</a>
           </span>
-          <span>{item.author}</span>
-          <span>{item.num_comments}</span>
-          <span>{item.points}</span>
-          <span>
+          <span style={{ width: '30%' }}>
+            {item.author}
+          </span>
+          <span style={{ width: '10%' }}>
+            {item.num_comments}
+          </span>
+          <span style={{ width: '10%' }}>
+            {item.points}
+          </span>
+          <span style={{ width: '10%' }}>
             <Button
-              onClick={() => onDismiss(item.objectID)}>
+              onClick={() => onDismiss(item.objectID)}
+              className="button-inline">
               Dismiss
             </Button>
           </span>
