@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+/** MOCK DATA
 const list = [
   {
     title: 'React',
@@ -20,6 +21,13 @@ const list = [
     objectID: 1,
   }
 ];
+**/
+
+const DEFAULT_QUERY = 'redux';
+
+const PATH_BASE = 'https://hn.algolia.com/api/v1';
+const PATH_SEARCH = '/search';
+const PARAM_SEARCH = 'query=';
 
 /** function isSearched(searchTerm){
   return function(item){
@@ -34,14 +42,36 @@ class App extends Component {
     super(props);
     
     this.state = {
-      //list: list, because the list variable name is called list, we can declare only list,
-      list,
-      searchTerm: '',
+      //list: list, because the mocked list variable name is called list, we can declare only list,
+      //list, commented because we're fetching real API
+      //searchTerm: '', commented because we're fetching real API
+      searchTerm: DEFAULT_QUERY,
+      result: null,
     };
 
     //The function is bound to the class and thus becomes a class method. You have to bind class methods in the constructor.
     this.onDismiss = this.onDismiss.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
+
+    //Fetching API
+    this.setSearchTopstories = this.setSearchTopstories.bind(this);
+    this.fetchSearchTopstories = this.fetchSearchTopstories.bind(this);
+  }
+
+  setSearchTopstories(result){
+    this.setState({ result });
+  }
+
+  fetchSearchTopstories(searchTerm){
+    fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`)
+      .then(response => response.json())
+      .then(result => this.setSearchTopstories(result));
+    console.log(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`);
+  }
+
+  componentDidMount(){
+    const { searchTerm } = this.state;
+    this.fetchSearchTopstories(searchTerm);
   }
 
   onDismiss(id){
@@ -60,7 +90,13 @@ class App extends Component {
 
   render() {
     //ES6 destructuring to shorten filter and map methods
-    const { list, searchTerm }  = this.state;
+    console.log(this.state);
+    const { result, searchTerm }  = this.state;
+    if (!result) {
+      console.log("result is null");
+      return null;
+    }
+
     return (
       <div className="page">
         <div className="interactions">
@@ -72,7 +108,7 @@ class App extends Component {
           </Search>
         </div>
         <Table
-          list={list}
+          list={result.hits}
           pattern={searchTerm}
           onDismiss={this.onDismiss}
         />
