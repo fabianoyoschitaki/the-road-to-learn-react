@@ -24,10 +24,12 @@ const list = [
 **/
 
 const DEFAULT_QUERY = 'redux';
+const DEFAULT_PAGE = 0;
 
 const PATH_BASE = 'https://hn.algolia.com/api/v1';
 const PATH_SEARCH = '/search';
 const PARAM_SEARCH = 'query=';
+const PARAM_PAGE = 'page=';
 
 /** function isSearched(searchTerm){
   return function(item){
@@ -38,9 +40,11 @@ const isSearched = (searchTerm) => (item) => !searchTerm || item.title.toLowerCa
 
 class App extends Component {
 
+  /**
+    The constructor
+   */
   constructor(props){
     super(props);
-    
     this.state = {
       //list: list, because the mocked list variable name is called list, we can declare only list,
       //list, commented because we're fetching real API
@@ -56,14 +60,39 @@ class App extends Component {
     //Fetching API
     this.setSearchTopstories = this.setSearchTopstories.bind(this);
     this.fetchSearchTopstories = this.fetchSearchTopstories.bind(this);
+
+    //When submitting, call API again
+    this.onSearchSubmit = this.onSearchSubmit.bind(this);
+  }
+
+  onSearchSubmit(event){
+    const { searchTerm } = this.state;
+    this.fetchSearchTopstories(searchTerm);
+    event.preventDefault();
   }
 
   setSearchTopstories(result){
-    this.setState({ result });
+    console.log("setSearchTopstories:", result);
+    const { hits, page } = result;
+
+    const oldHits = page !== 0 ? 
+      this.state.result.hits 
+      : [];
+      
+    const updatedHits = [ 
+      ...oldHits, 
+      ...hits
+    ];
+    this.setState({
+      //result : { hits: updatedHits, page: page } because the variable name page is the same, don't need to use :
+      result : { hits: updatedHits, page}
+    });
   }
 
-  fetchSearchTopstories(searchTerm){
-    fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`)
+  fetchSearchTopstories(searchTerm, page){
+    const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}`;
+    console.log(url);
+    fetch(url)
       .then(response => response.json())
       .then(result => this.setSearchTopstories(result));
     //console.log(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`);
@@ -71,7 +100,7 @@ class App extends Component {
 
   componentDidMount(){
     const { searchTerm } = this.state;
-    this.fetchSearchTopstories(searchTerm);
+    this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
   }
 
   onDismiss(id){
@@ -82,12 +111,10 @@ class App extends Component {
     **/
     const isNotId = item => item.objectID !== id;
     const updatedHits = this.state.result.hits.filter(isNotId);
-    console.log(updatedHits);
     this.setState({ 
       //ES5 result: Object.assign({}, this.state.result, { hits: updatedHits })
       result: { ...this.state.result, hits: updatedHits }
-    });
-    console.log(this.state);
+    });    
   }
 
   onSearchChange(event){
@@ -97,6 +124,7 @@ class App extends Component {
   render() {
     //ES6 destructuring to shorten filter and map methods
     const { result, searchTerm }  = this.state;
+    const page = (result && result.page) || 0;
     return (
       <div className="page">
         <div className="interactions">
@@ -104,6 +132,7 @@ class App extends Component {
             //uncontrolled components should be controlled input, textArea, select
             value={searchTerm}
             onChange={this.onSearchChange}
+            onSubmit={this.onSearchSubmit}
           >
             Search
           </Search>
@@ -111,23 +140,37 @@ class App extends Component {
         { result && 
             <Table
               list={result.hits}
-              pattern={searchTerm}
               onDismiss={this.onDismiss}
             />
-        }       
+        }
+        <div className="interactions">
+          <Button
+              onClick={() => this.fetchSearchTopstories(searchTerm, page + 1)}
+              className="button-inline">
+              More
+            </Button>
+        </div>   
       </div>
     );
   }
 }
 
-const Search = ({value, onChange, children}) => 
-  <form>
+const Search = ({
+  value, 
+  onChange, 
+  onSubmit, 
+  children
+}) => 
+  <form onSubmit={onSubmit}>
     { children } <input 
       type="text" 
       onChange={onChange}
       //uncontrolled components should be controlled input, textArea, select
       value={value}
       />
+      <button type="submit">
+        { children }
+      </button>
   </form>
 
 /** Replaced by const Search 
@@ -153,11 +196,15 @@ const Search = ({value, onChange, children}) =>
   }
 **/
 
-const Table = ({list, pattern, onDismiss}) =>
+//No more filter
+//const Table = ({list, pattern, onDismiss}) =>
+const Table = ({list, onDismiss}) =>
   //ES6 destructuring
   //const {list, pattern, onDismiss } = this.props;
   <div className="table">{ 
-    list.filter(isSearched(pattern)).map(item => 
+    //No more filter
+    //list.filter(isSearched(pattern)).map(item => 
+    list.map(item => 
         <div key={item.objectID} className="table-row">
           <span style={{ width: '40%'}}>
             <a href={item.url}>{item.title}</a>
