@@ -87,3 +87,23 @@ Unit Tests with Enzyme
 
 Command Line
 npm install --save-dev enzyme react-addons-test-utils
+
+
+----------------------------------------------------
+Font Awesome in React
+----------------------------------------------------
+If you are new to React JS and using create-react-app cli command to create the application, 
+then run the following NPM command to include the latest version of font-awesome.
+
+	npm install --save font-awesome
+
+import font-awesome to your index.js file. Just add below line to your index.js file
+
+	import '../node_modules/font-awesome/css/font-awesome.min.css'; 
+or
+	import 'font-awesome/css/font-awesome.min.css';
+Don't forget to use className as attribute
+
+ render: function() {
+    return <div><i className="fa fa-spinner fa-spin">no spinner but why</i></div>;
+}

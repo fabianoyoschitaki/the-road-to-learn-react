@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-
 /** MOCK DATA
 const list = [
   {
@@ -56,6 +55,7 @@ class App extends Component {
       results: null,
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
+      isLoading: false,
     };
 
     //The function is bound to the class and thus becomes a class method. You have to bind class methods in the constructor.
@@ -78,7 +78,8 @@ class App extends Component {
     const { 
       searchTerm,
       results, 
-      searchKey
+      searchKey,
+      isLoading
     }  = this.state;
     
     const page = (
@@ -110,11 +111,14 @@ class App extends Component {
           onDismiss={this.onDismiss}
         />        
         <div className="interactions">
-          <Button
-              onClick={() => this.fetchSearchTopstories(searchKey, page + 1)}
-              className="button-inline">
-              More
-            </Button>
+          {
+              isLoading ? <Loading />: 
+              <Button
+                onClick={() => this.fetchSearchTopstories(searchKey, page + 1)}
+                className="button-inline">
+                More
+              </Button>
+          }
         </div>   
       </div>
     );
@@ -152,13 +156,15 @@ class App extends Component {
       results : { 
         ...results,
         [searchKey]: {hits: updatedHits, page }
-      }
+      },
+      isLoading: false
     });
   }
 
   fetchSearchTopstories(searchTerm, page){
     const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`;
     console.log("url:", url);
+    this.setState({ isLoading: true });
     fetch(url)
       .then(response => response.json())
       .then(result => this.setSearchTopstories(result));    
@@ -317,6 +323,11 @@ const Button = ({ onClick, className = '', children }) =>
   >
     {children}
   </button>
+
+const Loading = () =>
+  <div>
+    <i className="fa fa-spinner fa-spin"></i>
+  </div>
 
 //PropTypes
 Button.propTypes = {
