@@ -1,4 +1,6 @@
-React Components Lifecycle:
+----------------------------------------------------
+React Components Lifecycle
+----------------------------------------------------
 	mounting process:
 		constructor()
 		componentWillMount()
@@ -54,9 +56,9 @@ perform further asynchronous requests.
 • componentWillUnmount() - It is called before you destroy your component. You can use the
 lifecycle method to perform any clean up tasks.
 
--------------
+----------------------------------------------------
 PropTypes:
-
+----------------------------------------------------
 npm install --save prop-types
 
 * PropTypes.array
@@ -69,11 +71,19 @@ npm install --save prop-types
 * PropTypes.node
 * PropTypes.element
 
--------------
-Jest:
+----------------------------------------------------
+Snapshot Tests with Jest
+----------------------------------------------------
 npm run test
 
 Now Jest enables you to write Snapshot tests. These tests make a snapshot of your rendered
 component and run this snapshot against future snapshots.
 
 npm install --save-dev react-test-renderer
+
+----------------------------------------------------
+Unit Tests with Enzyme
+----------------------------------------------------
+
+Command Line
+npm install --save-dev enzyme react-addons-test-utils
