@@ -56,6 +56,9 @@ lifecycle method to perform any clean up tasks.
 
 -------------
 PropTypes:
+
+npm install --save prop-types
+
 * PropTypes.array
 * PropTypes.bool
 * PropTypes.func
@@ -65,3 +68,12 @@ PropTypes:
 
 * PropTypes.node
 * PropTypes.element
+
+-------------
+Jest:
+npm run test
+
+Now Jest enables you to write Snapshot tests. These tests make a snapshot of your rendered
+component and run this snapshot against future snapshots.
+
+npm install --save-dev react-test-renderer

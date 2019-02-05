@@ -310,3 +310,9 @@ Search.propTypes = {
 }
 
 export default App;
+
+export {
+  Button,
+  Search,
+  Table,
+};
