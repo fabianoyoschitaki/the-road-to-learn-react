@@ -191,23 +191,61 @@ class App extends Component {
   }
 }
 
+/** Functional Stateless Component
 const Search = ({
   value, 
   onChange, 
   onSubmit, 
-  children
-}) => 
-  <form onSubmit={onSubmit}>
-    { children } <input 
-      type="text" 
-      onChange={onChange}
-      //uncontrolled components should be controlled input, textArea, select
-      value={value}
+  children 
+}) => {
+  let input;
+  return (
+    <form onSubmit={onSubmit}>
+      <input 
+        type="text" 
+        onChange={onChange}
+        //uncontrolled components should be controlled input, textArea, select
+        value={value}
+        //Ref a DOM Element to focus
+        ref={(node) => input = node}
       />
       <button type="submit">
         { children }
       </button>
-  </form>
+    </form>
+  );
+} **/
+
+/** ES6 class component **/
+class Search extends Component {
+  render(){
+    const {
+      value, 
+      onChange, 
+      onSubmit, 
+      children 
+    } = this.props;
+    return (
+      <form onSubmit={onSubmit}>
+        { children } <input 
+          type="text" 
+          onChange={onChange}
+          //uncontrolled components should be controlled input, textArea, select
+          value={value}
+          //Ref a DOM Element to focus
+          ref={(node) => {this.input = node;}}
+          />
+          <button type="submit">
+            { children }
+          </button>
+      </form>
+    );
+  }
+  //Ref a DOM Element to focus
+  componentDidMount(){
+    this.input.focus();
+  }
+}
 
 /** Replaced by const Search 
   // for functional stateless components we can destructure
