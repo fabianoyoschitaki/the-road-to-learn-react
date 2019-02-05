@@ -124,6 +124,11 @@ import React, { Component } from 'react';
 import { sortBy } from 'lodash';
 import './App.css';
 
+----------------------------------------------------
+State Management in React and beyond
+----------------------------------------------------
+• read more about lifting state in React¹ https://facebook.github.io/react/docs/lifting-state-up.html
+
 
 
 
