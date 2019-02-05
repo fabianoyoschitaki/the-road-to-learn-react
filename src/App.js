@@ -1,6 +1,7 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import PropTypes from 'prop-types';
+import { sortBy } from 'lodash';
+import classNames from 'classnames';
 import './App.css';
 
 /** MOCK DATA
@@ -34,6 +35,14 @@ const DEFAULT_QUERY = 'redux';
 const DEFAULT_PAGE = 0;
 const DEFAULT_HPP = 10;
 
+const SORTS = {
+  NONE: list => list,
+  TITLE: list => sortBy(list, 'title'),
+  AUTHOR: list => sortBy(list, 'author'),
+  COMMENTS: list => sortBy(list, 'comments').reverse(),
+  POINTS: list => sortBy(list, 'points').reverse(),
+}
+
 /** function isSearched(searchTerm){
   return function(item){
     return !searchTerm || item.title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -56,6 +65,8 @@ class App extends Component {
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
       isLoading: false,
+      sortKey: 'NONE',
+      isSortReverse: false,
     };
 
     //The function is bound to the class and thus becomes a class method. You have to bind class methods in the constructor.
@@ -71,6 +82,9 @@ class App extends Component {
 
     //To prevent request in case it's already in the client cache
     this.needsToSearchTopstories = this.needsToSearchTopstories.bind(this);
+
+    //To sort the list
+    this.onSort = this.onSort.bind(this);
   }
 
   render() {
@@ -79,7 +93,9 @@ class App extends Component {
       searchTerm,
       results, 
       searchKey,
-      isLoading
+      isLoading,
+      sortKey,
+      isSortReverse
     }  = this.state;
     
     const page = (
@@ -108,7 +124,10 @@ class App extends Component {
         </div>
         <Table
           list={list}
+          sortKey={sortKey}
+          onSort={this.onSort}
           onDismiss={this.onDismiss}
+          isSortReverse={isSortReverse}
         />
         <div className="interactions">
           <ButtonWithLoading
@@ -122,10 +141,6 @@ class App extends Component {
     );
   }
 
-  needsToSearchTopstories(searchTerm){
-    return !this.state.results[searchTerm];
-  }
-
   onSearchSubmit(event){
     const { searchTerm } = this.state;
     this.setState({ searchKey: searchTerm });
@@ -135,6 +150,35 @@ class App extends Component {
     }
     
     event.preventDefault();
+  }
+
+  onSort(sortKey){
+    const isSortReverse = (this.state.sortKey === sortKey && !this.state.isSortReverse);
+    this.setState({ sortKey, isSortReverse });
+  }
+
+  onDismiss(id){
+    const { searchKey, results } = this.state;    
+    const { hits, page } = results[searchKey];
+
+    const isNotId = item => item.objectID !== id;
+    const updatedHits = hits.filter(isNotId);
+    
+    this.setState({ 
+      //ES5 result: Object.assign({}, this.state.result, { hits: updatedHits })
+      results: { 
+        ...results, 
+        [searchKey]: {hits: updatedHits, page }
+      }
+    });    
+  }
+
+  onSearchChange(event){
+    this.setState({ searchTerm: event.target.value });
+  }
+
+  needsToSearchTopstories(searchTerm){
+    return !this.state.results[searchTerm];
   }
 
   setSearchTopstories(result){
@@ -172,26 +216,6 @@ class App extends Component {
     const { searchTerm } = this.state;
     this.setState({ searchKey: searchTerm });
     this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
-  }
-
-  onDismiss(id){
-    const { searchKey, results } = this.state;    
-    const { hits, page } = results[searchKey];
-
-    const isNotId = item => item.objectID !== id;
-    const updatedHits = hits.filter(isNotId);
-    
-    this.setState({ 
-      //ES5 result: Object.assign({}, this.state.result, { hits: updatedHits })
-      results: { 
-        ...results, 
-        [searchKey]: {hits: updatedHits, page }
-      }
-    });    
-  }
-
-  onSearchChange(event){
-    this.setState({ searchTerm: event.target.value });
   }
 }
 
@@ -276,36 +300,89 @@ class Search extends Component {
 
 //No more filter
 //const Table = ({list, pattern, onDismiss}) =>
-const Table = ({list, onDismiss}) =>
-  //ES6 destructuring
-  //const {list, pattern, onDismiss } = this.props;
-  <div className="table">{ 
-    //No more filter
-    //list.filter(isSearched(pattern)).map(item => 
-    list.map(item => 
-        <div key={item.objectID} className="table-row">
-          <span style={{ width: '40%'}}>
-            <a href={item.url}>{item.title}</a>
-          </span>
-          <span style={{ width: '30%' }}>
-            {item.author}
-          </span>
-          <span style={{ width: '10%' }}>
-            {item.num_comments}
-          </span>
-          <span style={{ width: '10%' }}>
-            {item.points}
-          </span>
-          <span style={{ width: '10%' }}>
-            <Button
-              onClick={() => onDismiss(item.objectID)}
-              className="button-inline">
-              Dismiss
-            </Button>
-          </span>
-        </div>
-      )}
-  </div>
+const Table = ({
+  list, 
+  sortKey, 
+  isSortReverse,
+  onSort, 
+  onDismiss
+}) => {
+  const sortedList = SORTS[sortKey](list);
+  const reverseSortedList = isSortReverse ? sortedList.reverse() : sortedList;
+  
+  return (
+    //ES6 destructuring
+    //const {list, pattern, onDismiss } = this.props;
+    <div className="table"> 
+      <div className="table-header">
+        <span style={{ width: '40%' }}>
+          <Sort
+            sortKey={'TITLE'}
+            onSort={onSort}
+            activeSortKey={sortKey}
+          >
+            Title
+          </Sort>
+        </span>
+        <span style={{ width: '30%' }}>
+          <Sort
+            sortKey={'AUTHOR'}
+            onSort={onSort}
+            activeSortKey={sortKey}
+          >
+            Author
+          </Sort>
+        </span>
+        <span style={{ width: '10%' }}>
+          <Sort
+            sortKey={'COMMENTS'}
+            onSort={onSort}
+            activeSortKey={sortKey}
+          >
+            Comments
+          </Sort>
+        </span>
+        <span style={{ width: '10%' }}>
+          <Sort
+            sortKey={'POINTS'}
+            onSort={onSort}
+            activeSortKey={sortKey}
+          >
+            Points
+          </Sort>
+        </span>
+        <span style={{ width: '10%' }}>
+          Archive
+        </span>
+      </div>
+      { reverseSortedList.map(item => 
+        //No more filter
+        //list.filter(isSearched(pattern)).map(item => 
+          <div key={item.objectID} className="table-row">
+            <span style={{ width: '40%'}}>
+              <a href={item.url}>{item.title}</a>
+            </span>
+            <span style={{ width: '30%' }}>
+              {item.author}
+            </span>
+            <span style={{ width: '10%' }}>
+              {item.num_comments}
+            </span>
+            <span style={{ width: '10%' }}>
+              {item.points}
+            </span>
+            <span style={{ width: '10%' }}>
+              <Button
+                onClick={() => onDismiss(item.objectID)}
+                className="button-inline">
+                Dismiss
+              </Button>
+            </span>
+          </div>
+        )}
+    </div>
+  );
+}
 
 const Button = ({ onClick, className = '', children }) =>
   /**
@@ -345,7 +422,35 @@ const withLoading = (Component) => ({ isLoading, ...rest }) =>
 
 const ButtonWithLoading = withLoading(Button);
 
-
+const Sort = ({
+  sortKey, 
+  activeSortKey,
+  onSort, children
+}) => {
+  
+  /** The way to define the class is a bit clumsy, isn’t it? There is a neat little library to get rid of this.
+  First you have to install it. npm install --save classnames
+  
+  const sortClass = ['button-inline'];
+  if (sortKey === activeSortKey){
+    sortClass.push('button-active');
+  }
+  **/
+  const sortClass = classNames(
+    'button-inline',
+    { 'button-active': sortKey === activeSortKey }
+  );
+  
+  return (
+    <Button 
+      onClick={() => onSort(sortKey)}
+      //className={sortClass.join(' ')}
+      className={sortClass}
+    >
+      {children}
+    </Button>
+  );
+}
 //PropTypes
 Button.propTypes = {
   onClick: PropTypes.func.isRequired,

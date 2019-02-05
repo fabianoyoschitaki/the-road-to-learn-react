@@ -107,3 +107,27 @@ Don't forget to use className as attribute
  render: function() {
     return <div><i className="fa fa-spinner fa-spin">no spinner but why</i></div>;
 }
+
+----------------------------------------------------
+Advanced Sorting
+----------------------------------------------------
+It would be possible to write your own sort function, but personally I prefer to use a utility library for
+such cases. Lodash¹ is one of these utility libraries. Let’s install and use it for the sort functionality.
+
+Command Line
+npm install --save lodash
+
+Now you can import the sort functionality of lodash in your src/App.js file.
+
+src/App.js
+import React, { Component } from 'react';
+import { sortBy } from 'lodash';
+import './App.css';
+
+
+
+
+
+
+
+
