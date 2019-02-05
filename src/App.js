@@ -425,7 +425,8 @@ const ButtonWithLoading = withLoading(Button);
 const Sort = ({
   sortKey, 
   activeSortKey,
-  onSort, children
+  onSort, 
+  children
 }) => {
   
   /** The way to define the class is a bit clumsy, isn’t it? There is a neat little library to get rid of this.
@@ -436,9 +437,13 @@ const Sort = ({
     sortClass.push('button-active');
   }
   **/
+  //TODO use a library like Font Awesome¹⁰⁵ to indicate the (reverse) sort
+  // – it could be an arrow up or down icon next to each Sort header
   const sortClass = classNames(
     'button-inline',
-    { 'button-active': sortKey === activeSortKey }
+    { 
+      'button-active': sortKey === activeSortKey      
+    }
   );
   
   return (
