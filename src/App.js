@@ -32,7 +32,7 @@ const PARAM_HPP = 'hitsPerPage=';
 
 const DEFAULT_QUERY = 'redux';
 const DEFAULT_PAGE = 0;
-const DEFAULT_HPP = 100;
+const DEFAULT_HPP = 10;
 
 /** function isSearched(searchTerm){
   return function(item){
@@ -109,16 +109,14 @@ class App extends Component {
         <Table
           list={list}
           onDismiss={this.onDismiss}
-        />        
+        />
         <div className="interactions">
-          {
-              isLoading ? <Loading />: 
-              <Button
-                onClick={() => this.fetchSearchTopstories(searchKey, page + 1)}
-                className="button-inline">
-                More
-              </Button>
-          }
+          <ButtonWithLoading
+            isLoading={ isLoading }
+            onClick={() => this.fetchSearchTopstories(searchKey, page + 1)}
+            className="button-inline">
+            More
+          </ButtonWithLoading>      
         </div>   
       </div>
     );
@@ -328,6 +326,25 @@ const Loading = () =>
   <div>
     <i className="fa fa-spinner fa-spin"></i>
   </div>
+
+/**
+There is one little thing that you should avoid. You pass all the props including the isLoading
+property, by spreading the object, into the input component. However, the input component doesn’t
+care about the isLoading property. You can use the ES6 rest destructuring to avoid it.
+
+Spread operator:
+before you would have to destructure the props before passing them
+const { foo, bar } = props;
+<SomeComponent foo={foo} bar={bar} />
+
+but you can use the object spread operator to pass all object properties
+<SomeComponent { ...props } />
+**/
+const withLoading = (Component) => ({ isLoading, ...rest }) =>
+  isLoading ? <Loading/> : <Component { ...rest }/>
+
+const ButtonWithLoading = withLoading(Button);
+
 
 //PropTypes
 Button.propTypes = {
