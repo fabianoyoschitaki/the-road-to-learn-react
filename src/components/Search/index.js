@@ -37,7 +37,8 @@ class Search extends Component {
     } = this.props;
     return (
       <form onSubmit={onSubmit}>
-        { children } <input 
+        {/*{ children }*/} 
+        <input 
           type="text" 
           onChange={onChange}
           //uncontrolled components should be controlled input, textArea, select
