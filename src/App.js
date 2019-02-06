@@ -138,7 +138,7 @@ class App extends Component {
             onChange={this.onSearchChange}
             onSubmit={this.onSearchSubmit}
           >
-            Search:
+            Search
           </Search>
         </div>
         <Table
