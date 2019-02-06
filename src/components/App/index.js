@@ -159,7 +159,7 @@ class App extends Component {
     return !searchTerm || item.title.toLowerCase().includes(searchTerm.toLowerCase());
   }
 } or the arrow function below with high order functions **/
-const isSearched = (searchTerm) => (item) => !searchTerm || item.title.toLowerCase().includes(searchTerm.toLowerCase());
+// const isSearched = (searchTerm) => (item) => !searchTerm || item.title.toLowerCase().includes(searchTerm.toLowerCase());
 
 /**
 That’s it. The function over an object approach in setState() fixes potential bugs yet increases
