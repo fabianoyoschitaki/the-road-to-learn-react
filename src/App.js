@@ -50,6 +50,32 @@ const SORTS = {
 } or the arrow function below with high order functions **/
 const isSearched = (searchTerm) => (item) => !searchTerm || item.title.toLowerCase().includes(searchTerm.toLowerCase());
 
+/**
+That’s it. The function over an object approach in setState() fixes potential bugs yet increases
+readability and maintainability of your code.
+ */
+const updateSearchTopstoriesState = (hits, page) => (prevState) => {
+  const { searchKey, results } = prevState;
+  
+  const oldHits = results && results[searchKey] 
+    ? results[searchKey].hits 
+    : [];
+    
+  const updatedHits = [ 
+    ...oldHits, 
+    ...hits
+  ];
+
+  return {
+    //result : { hits: updatedHits, page: page } because the variable name page is the same, don't need to use :
+    results : { 
+      ...results,
+      [searchKey]: {hits: updatedHits, page }
+    },
+    isLoading: false
+  };
+};
+
 class App extends Component {
 
   /**
@@ -168,24 +194,9 @@ class App extends Component {
 
   setSearchTopstories(result){
     const { hits, page } = result;
-    const { searchKey, results } = this.state;
-
-    const oldHits = results && results[searchKey] 
-      ? results[searchKey].hits 
-      : [];
-      
-    const updatedHits = [ 
-      ...oldHits, 
-      ...hits
-    ];
-    this.setState({
-      //result : { hits: updatedHits, page: page } because the variable name page is the same, don't need to use :
-      results : { 
-        ...results,
-        [searchKey]: {hits: updatedHits, page }
-      },
-      isLoading: false
-    });
+    
+    /** That will fix the issue with a stale state. */
+    this.setState(updateSearchTopstoriesState(hits, page));    
   }
 
   fetchSearchTopstories(searchTerm, page){
