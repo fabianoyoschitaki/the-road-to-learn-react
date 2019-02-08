@@ -1,4 +1,55 @@
 ----------------------------------------------------
+Requirements
+----------------------------------------------------
+node --version > *v7.4.0
+
+npm --version > *v4.0.5
+
+Installing React package locally:
+	npm install --save react
+		The --save flag tells npm to store the package requirement in a file called package.json. The file can be found in your project folder.
+		
+npm install --save-dev <package>
+	The --save-dev flag indicates that the node package is only used in the development environment.
+	It will not be used in production when you deploy your application on a server. What kind of node package could that be? Imagine you want to test your application with the help of a node package.
+You need to install that package via npm, but want to exclude it from your production environment.
+
+create a folder with the project name and navigate into it
+execute npm init -y (to create the package.json)
+install a local package like React with npm install --save react
+
+----------------------------------------------------
+Zero-Configuration Setup
+----------------------------------------------------
+In the Road to learn React you will use create-react-app³² to bootstrap your application. It’s an
+opinionated yet zero-configuration starter kit for React introduced by Facebook in 2016. People
+would recommend it to beginners by 96%³³. In create-react-app the tooling and configuration evolve
+in the background while the focus is on the application implementation.
+To get started, you will have to install the package to your global node packages. After that you
+always have it available on the command line to bootstrap new React applications.
+
+npm install -g create-react-app
+
+create-react-app <APP NAME>
+
+* if gets error "Missing dependencies in package.json", 
+	use create-react-app <APP NAME> --use-npm
+	or yarn config set strict-ssl false and then try again npm install -g create-react-app
+
+----------------------------------------------------
+NPM application commands	
+----------------------------------------------------
+
+// Runs the application in http://localhost:3000
+npm start
+
+// Runs the tests
+npm test
+
+// Builds the application for production
+npm run build
+
+----------------------------------------------------
 React Components Lifecycle
 ----------------------------------------------------
 	mounting process:
