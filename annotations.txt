@@ -50,6 +50,19 @@ npm test
 npm run build
 
 ----------------------------------------------------
+Hot Module Reloading
+----------------------------------------------------
+src/index.js
+
+ReactDOM.render(
+<App />,
+document.getElementById('root')
+);
+
+if (module.hot) {
+	module.hot.accept()
+}
+----------------------------------------------------
 React Components Lifecycle
 ----------------------------------------------------
 	mounting process:
